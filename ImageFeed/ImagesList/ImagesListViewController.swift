@@ -18,6 +18,31 @@ final class ImagesListViewController: UIViewController {
         tableView.rowHeight = 200
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ShowSingleImage" {
+            guard
+                let viewController = segue.destination as? SingleImageViewController,
+                let indexPath = sender as? IndexPath
+            else {
+                assertionFailure("Invalid segue destination")
+                return
+            }
+            
+            let image = UIImage(named: photosName[indexPath.row])
+            viewController.imageView.image = image
+        } else {
+            super.prepare(for: segue, sender: sender)
+        }
+    }
+    
+    private func getImage(named name: String) -> UIImage {
+        guard let image = UIImage(named: name) else {
+            assertionFailure("Failed to get image named: \(name)")
+            return UIImage()
+        }
+        return image
+    }
 }
 
 extension ImagesListViewController: UITableViewDataSource {
@@ -41,10 +66,7 @@ extension ImagesListViewController: UITableViewDataSource {
 
 extension ImagesListViewController {
     private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            print("Failed to get image")
-            return
-        }
+        let image = getImage(named: photosName[indexPath.row])
         
         cell.cellImage.image = image
         cell.dateLabel.text = Date().dateString
@@ -57,14 +79,11 @@ extension ImagesListViewController {
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // TODO
+        performSegue(withIdentifier: "ShowSingleImage", sender: indexPath)
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            print("Failed to get image")
-            return 0
-        }
+        let image = getImage(named: photosName[indexPath.row])
         
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
