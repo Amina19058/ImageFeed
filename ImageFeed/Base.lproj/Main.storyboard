@@ -217,6 +217,9 @@
                                 </subviews>
                                 <viewLayoutGuide key="contentLayoutGuide" id="OmL-Z9-hFF"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="6Ww-c5-cRa"/>
+                                <connections>
+                                    <outlet property="delegate" destination="7oN-JB-PwI" id="GyM-QF-d2h"/>
+                                </connections>
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="utP-3V-cVv">
                                 <rect key="frame" x="8" y="8" width="48" height="48"/>
@@ -226,6 +229,9 @@
                                 </constraints>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" image="nav_back_button_white"/>
+                                <connections>
+                                    <action selector="didTapBackButton:" destination="7oN-JB-PwI" eventType="touchUpInside" id="f8b-SU-MlK"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="NGO-aN-8q8"/>
