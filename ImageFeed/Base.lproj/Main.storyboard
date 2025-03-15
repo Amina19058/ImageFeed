@@ -221,6 +221,18 @@
                                     <outlet property="delegate" destination="7oN-JB-PwI" id="GyM-QF-d2h"/>
                                 </connections>
                             </scrollView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bdS-xN-MUl">
+                                <rect key="frame" x="182" y="829" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="3dG-aN-7wh"/>
+                                    <constraint firstAttribute="width" constant="50" id="UWG-mi-t9j"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="share_button"/>
+                                <connections>
+                                    <action selector="didTapShareButton:" destination="7oN-JB-PwI" eventType="touchUpInside" id="8cP-uH-RLX"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="utP-3V-cVv">
                                 <rect key="frame" x="8" y="8" width="48" height="48"/>
                                 <constraints>
@@ -239,9 +251,11 @@
                         <constraints>
                             <constraint firstItem="utP-3V-cVv" firstAttribute="top" secondItem="NGO-aN-8q8" secondAttribute="top" constant="8" id="5yv-C5-LQt"/>
                             <constraint firstItem="NGO-aN-8q8" firstAttribute="trailing" secondItem="jmp-ez-cSm" secondAttribute="trailing" id="CHh-r9-LDR"/>
+                            <constraint firstItem="NGO-aN-8q8" firstAttribute="bottom" secondItem="bdS-xN-MUl" secondAttribute="bottom" constant="17" id="G7g-bd-16W"/>
                             <constraint firstItem="jmp-ez-cSm" firstAttribute="leading" secondItem="NGO-aN-8q8" secondAttribute="leading" id="MdU-Kp-702"/>
                             <constraint firstItem="jmp-ez-cSm" firstAttribute="top" secondItem="f0E-fP-zcw" secondAttribute="top" id="Ysn-Ly-rfj"/>
                             <constraint firstItem="utP-3V-cVv" firstAttribute="leading" secondItem="NGO-aN-8q8" secondAttribute="leading" constant="8" id="dPT-1Y-Hre"/>
+                            <constraint firstItem="bdS-xN-MUl" firstAttribute="centerX" secondItem="NGO-aN-8q8" secondAttribute="centerX" id="gjt-hO-JrF"/>
                             <constraint firstAttribute="bottom" secondItem="jmp-ez-cSm" secondAttribute="bottom" id="y7M-Tj-fXg"/>
                         </constraints>
                     </view>
@@ -261,6 +275,7 @@
         <image name="like_button_on" width="44" height="44"/>
         <image name="nav_back_button_white" width="24" height="24"/>
         <image name="profile_photo" width="70" height="70"/>
+        <image name="share_button" width="50.5" height="50"/>
         <image name="tab_editorial_active" width="75.5" height="49"/>
         <image name="tab_profile_active" width="75.5" height="49"/>
         <namedColor name="YP Black">
