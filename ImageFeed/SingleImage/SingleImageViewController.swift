@@ -10,13 +10,15 @@ import UIKit
 final class SingleImageViewController: UIViewController {
     var image: UIImage?
     
+    @IBOutlet var scrollView: UIScrollView!
     @IBOutlet private var imageView: UIImageView!
-    @IBAction func didTapBackButton(_ sender: Any) {
-        dismiss(animated: true, completion: nil)
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.image = image
+    }
+    
+    @IBAction func didTapBackButton(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
     }
 }
