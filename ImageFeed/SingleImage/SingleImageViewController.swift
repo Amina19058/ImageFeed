@@ -66,16 +66,6 @@ extension SingleImageViewController: UIScrollViewDelegate {
 
         scrollView.contentInset = UIEdgeInsets(top: offY, left: offX, bottom: offY, right: offX)
     }
-    
-//    func scrollViewDidEndZooming(_ scrollView: UIScrollView) {
-//        let visibleRectSize = scrollView.bounds.size
-//        let contentSize = scrollView.contentSize
-//        
-//        let offX = max((visibleRectSize.width - contentSize.width) / 2, 0)
-//        let offY = max((visibleRectSize.height - contentSize.height) / 2, 0)
-//        
-//        scrollView.contentInset = UIEdgeInsets(top: offY, left: offX, bottom: offY, right: offX)
-//    }
 }
 
 extension SingleImageViewController {
@@ -96,12 +86,6 @@ extension SingleImageViewController {
         
         self.scrollView.setZoomScale(scale, animated: false)
         scrollView.layoutIfNeeded()
-                
-//        let newContentSize = scrollView.contentSize
-        
-//        let x = (newContentSize.width - visibleRectSize.width) / 2
-//        let y = (newContentSize.height - visibleRectSize.height) / 2
-//        scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
         
         scrollViewDidEndZooming(scrollView, with: imageView, atScale: scale)
     }
