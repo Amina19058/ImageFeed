@@ -17,10 +17,6 @@ final class AuthViewController: UIViewController {
     
     weak var delegate: AuthViewControllerDelegate?
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showWebViewSegueIdentifier {
             guard
@@ -40,20 +36,16 @@ extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         vc.dismiss(animated: true)
         
-        oAuth2Service.fetchOAuthToken(code: code) { result in
+        oAuth2Service.fetchOAuthToken(code: code) { [weak self, weak vc] result in
+            guard let self, let vc else { return }
             switch result {
             case .success(let token):
                 print("Successfully obtained token: \(token)")
-                DispatchQueue.main.async { [self] in
-                    vc.dismiss(animated: true)
-                    delegate?.didAuthenticate(self)
-                }
+                vc.dismiss(animated: true)
+                delegate?.didAuthenticate(self)
 
             case .failure(let error):
                 print("Error obtaining token: \(error)")
-                DispatchQueue.main.async {
-                    // TODO
-                }
             }
         }
     }

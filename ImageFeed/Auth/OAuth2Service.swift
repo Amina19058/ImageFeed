@@ -13,6 +13,7 @@ final class OAuth2Service {
     private let unsplashTokenURLString = "https://unsplash.com/oauth/token"
 
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
+    private let decoder = JSONDecoder()
 
     private init() {}
     
@@ -22,12 +23,14 @@ final class OAuth2Service {
             return
         }
 
-        let task = URLSession.shared.data(for: request) { result in
+        let task = URLSession.shared.data(for: request) { [weak self] result in
+            guard let self else { return }
+            
             switch result {
             case .success(let data):
                 do {
-                    let token = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data).accessToken
-                    self.oAuth2TokenStorage.token = token
+                    let token = try decoder.decode(OAuthTokenResponseBody.self, from: data).accessToken
+                    oAuth2TokenStorage.token = token
                     completion(.success(token))
                 } catch {
                     print("Decoding error: \(error.localizedDescription)")

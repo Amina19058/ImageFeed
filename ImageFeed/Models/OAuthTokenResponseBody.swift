@@ -5,7 +5,7 @@
 //  Created by Amina Khusnutdinova on 29.03.2025.
 //
 
-struct OAuthTokenResponseBody: Codable {
+struct OAuthTokenResponseBody: Decodable {
     let accessToken: String
     
     private enum CodingKeys: String, CodingKey {
