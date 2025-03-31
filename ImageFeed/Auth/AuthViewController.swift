@@ -34,12 +34,11 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {        
-        oAuth2Service.fetchOAuthToken(code: code) { [weak self, weak vc] result in
-            guard let self, let vc else { return }
+        oAuth2Service.fetchOAuthToken(code: code) { [weak self] result in
+            guard let self else { return }
             switch result {
             case .success(let token):
                 print("Successfully obtained token: \(token)")
-                vc.dismiss(animated: true)
                 delegate?.didAuthenticate(self)
 
             case .failure(let error):
