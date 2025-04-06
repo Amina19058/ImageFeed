@@ -72,11 +72,12 @@ final class ProfileViewController: UIViewController {
     private func updateAvatar() {
         guard
             let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL),
-            let imageView = self.avatarImageView
+            let url = URL(string: profileImageURL)
         else { return }
-        imageView.kf.setImage(with: url,
-                              placeholder: UIImage(named: "profile_photo")) { result in
+        let processor = RoundCornerImageProcessor(cornerRadius: 20)
+        self.avatarImageView?.kf.setImage(with: url,
+                              placeholder: UIImage(named: "profile_photo_placeholder"),
+                                          options: [.processor(processor)]) { result in
             switch result {
             case .success:
                 print("[updateAvatar] Profile image updated successfully")

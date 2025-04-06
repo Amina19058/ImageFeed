@@ -23,7 +23,7 @@ final class ProfileImageService {
     static let shared = ProfileImageService()
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     
-    private let unsplashProfileImageURLString = "/users/:username"
+    private let unsplashProfileImageURLString = "https://api.unsplash.com/users/"
     
     private let urlSession = URLSession.shared
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
@@ -52,7 +52,7 @@ final class ProfileImageService {
         task?.cancel()
         lastToken = token
         
-        guard let request = makeProfileInfoRequest(token: token) else {
+        guard let request = makeProfileInfoRequest(token: token, username: username) else {
             print("[fetchProfileImageURL] Failed to create profile request")
             completion(.failure(ProfileServiceError.invalidRequest))
             return
@@ -89,8 +89,8 @@ final class ProfileImageService {
         task.resume()
     }
     
-    private func makeProfileInfoRequest(token: String) -> URLRequest? {
-        guard var url = URL(string: unsplashProfileImageURLString) else {
+    private func makeProfileInfoRequest(token: String, username: String) -> URLRequest? {
+        guard let url = URL(string: unsplashProfileImageURLString + username) else {
             print("[makeProfileInfoRequest] Invalid unsplashProfileURLString: \(unsplashProfileImageURLString)")
             return nil
         }
