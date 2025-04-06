@@ -15,7 +15,27 @@ final class ProfileViewController: UIViewController {
     
     private var logoutButton: UIButton?
     
+    private let profileService = ProfileService.shared
+    private let oAuth2TokenStorage = OAuth2TokenStorage.shared
+    
+    private var profile: Profile?
+    
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     override func viewDidLoad() {
+        self.profile = profileService.profile
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+        
         setupAvatarImageView()
         setupNameLabel()
         setupLoginName()
@@ -38,11 +58,19 @@ final class ProfileViewController: UIViewController {
         imageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
     }
     
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+    }
+    
     private func setupNameLabel() {
         guard let avatarImageView = avatarImageView else { return }
         
         let nameLabel = UILabel()
-        nameLabel.text = "Екатерина Новикова"
+        nameLabel.text = profile?.name
         nameLabel.font = .systemFont(ofSize: 23, weight: .semibold)
         nameLabel.textColor = .ypWhite
         
@@ -60,7 +88,7 @@ final class ProfileViewController: UIViewController {
         guard let nameLabel = nameLabel else { return }
         
         let loginNameLabel = UILabel()
-        loginNameLabel.text = "@ekaterina_nov"
+        loginNameLabel.text = profile?.loginName
         loginNameLabel.font = .systemFont(ofSize: 13, weight: .regular)
         loginNameLabel.textColor = .ypGray
         
@@ -78,7 +106,7 @@ final class ProfileViewController: UIViewController {
         guard let loginNameLabel = loginNameLabel else { return }
         
         let descriptionLabel = UILabel()
-        descriptionLabel.text = "Hello, World!"
+        descriptionLabel.text = profile?.bio
         descriptionLabel.font = .systemFont(ofSize: 13, weight: .regular)
         descriptionLabel.textColor = .ypWhite
         

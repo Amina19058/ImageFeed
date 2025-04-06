@@ -21,8 +21,6 @@ final class OAuth2Service {
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var lastCode: String?
-    
-    private let decoder = JSONDecoder()
 
     private init() {}
     
@@ -30,6 +28,7 @@ final class OAuth2Service {
         assert(Thread.isMainThread)
         
         guard lastCode != code else {
+            print("[fetchOAuthToken] AuthServiceError.invalidRequest")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
@@ -38,29 +37,23 @@ final class OAuth2Service {
         lastCode = code
         
         guard let request = makeOAuthTokenRequest(code: code) else {
-            print("Failed to create token request")
+            print("[fetchOAuthToken] Failed to create token request")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
 
-        let task = urlSession.data(for: request) { [weak self] result in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             DispatchQueue.main.async {
                 guard let self else { return }
                 
                 switch result {
-                case .success(let data):
-                    do {
-                        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        let token = try self.decoder.decode(OAuthTokenResponseBody.self, from: data).accessToken
-                        self.oAuth2TokenStorage.token = token
-                        completion(.success(token))
-                    } catch {
-                        print("Decoding error: \(error.localizedDescription)")
-                        completion(.failure(error))
-                    }
+                case .success(let oAuthTokenResponseBody):
+                    let token = oAuthTokenResponseBody.accessToken
+                    self.oAuth2TokenStorage.token = token
                     
+                    completion(.success(token))
                 case .failure(let error):
-                    print("Network error: \(error.localizedDescription)")
+                    print("[fetchOAuthToken] Failed to fetch token: \(error.localizedDescription)")
                     completion(.failure(error))
                 }
                 
@@ -75,7 +68,7 @@ final class OAuth2Service {
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: unsplashTokenURLString) else {
-            print("Invalid unsplashTokenURLString: \(unsplashTokenURLString)")
+            print("[makeOAuthTokenRequest] Invalid unsplashTokenURLString: \(unsplashTokenURLString)")
             return nil
         }
         
@@ -88,7 +81,7 @@ final class OAuth2Service {
         ]
         
         guard let url = urlComponents.url else {
-            print("Couldn't create URL")
+            print("[makeOAuthTokenRequest] Couldn't create URL")
             return nil
         }
         
