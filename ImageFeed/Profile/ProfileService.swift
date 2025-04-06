@@ -31,7 +31,7 @@ final class ProfileService {
     
     private(set) var profile: Profile?
     
-    private let unsplashProfileURLString = "/me"
+    private let unsplashProfileURLString = "https://api.unsplash.com/me"
 
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
@@ -81,7 +81,7 @@ final class ProfileService {
     }
     
     private func makeProfileInfoRequest(token: String) -> URLRequest? {
-        guard var url = URL(string: unsplashProfileURLString) else {
+        guard let url = URL(string: unsplashProfileURLString) else {
             print("[makeProfileInfoRequest] Invalid unsplashProfileURLString: \(unsplashProfileURLString)")
             return nil
         }

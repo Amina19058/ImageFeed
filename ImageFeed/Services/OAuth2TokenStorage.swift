@@ -25,10 +25,14 @@ final class OAuth2TokenStorage {
         }
         set {
             guard let newValue else {
-                print("Failed to set new token value")
+                print("Failed to set new token value: token is nil")
                 return
             }
             storage.set(newValue, forKey: Keys.token.rawValue)
         }
+    }
+    
+    func clearToken() {
+        storage.removeObject(forKey: Keys.token.rawValue)
     }
 }

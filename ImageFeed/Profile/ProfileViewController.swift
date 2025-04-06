@@ -165,6 +165,6 @@ final class ProfileViewController: UIViewController {
     
     @objc
     private func didTapLogoutButton(_ sender: Any) {
-        
+        oAuth2TokenStorage.clearToken()
     }
 }
