@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     private var avatarImageView: UIImageView?
@@ -23,7 +24,7 @@ final class ProfileViewController: UIViewController {
     private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
-        self.profile = profileService.profile
+        setupPrifile()
         
         profileImageServiceObserver = NotificationCenter.default
             .addObserver(
@@ -34,7 +35,17 @@ final class ProfileViewController: UIViewController {
                 guard let self = self else { return }
                 self.updateAvatar()
             }
+        
         updateAvatar()
+    }
+    
+    private func setupPrifile() {
+        guard let profile = profileService.profile else {
+            print("[setupPrifile] ProfileService profile is nil")
+            return
+        }
+        
+        self.profile = profile
         
         setupAvatarImageView()
         setupNameLabel()
@@ -61,9 +72,18 @@ final class ProfileViewController: UIViewController {
     private func updateAvatar() {
         guard
             let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
+            let url = URL(string: profileImageURL),
+            let imageView = self.avatarImageView
         else { return }
-        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+        imageView.kf.setImage(with: url,
+                              placeholder: UIImage(named: "profile_photo")) { result in
+            switch result {
+            case .success:
+                print("[updateAvatar] Profile image updated successfully")
+            case .failure:
+                print("[updateAvatar] Fail to update profile image")
+            }
+        }
     }
     
     private func setupNameLabel() {
