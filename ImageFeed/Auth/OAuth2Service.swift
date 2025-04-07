@@ -7,48 +7,66 @@
 
 import Foundation
 
+enum AuthServiceError: Error {
+    case invalidRequest
+}
+
 final class OAuth2Service {
     static let shared = OAuth2Service()
     
     private let unsplashTokenURLString = "https://unsplash.com/oauth/token"
 
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
-    private let decoder = JSONDecoder()
+
+    private let urlSession = URLSession.shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
 
     private init() {}
     
     func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+        guard lastCode != code else {
+            print("[fetchOAuthToken] AuthServiceError.invalidRequest")
+            completion(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        
+        task?.cancel()
+        lastCode = code
+        
         guard let request = makeOAuthTokenRequest(code: code) else {
-            print("Failed to create token request")
+            print("[fetchOAuthToken] Failed to create token request")
+            completion(.failure(AuthServiceError.invalidRequest))
             return
         }
 
-        let task = URLSession.shared.data(for: request) { [weak self] result in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             guard let self else { return }
             
             switch result {
-            case .success(let data):
-                do {
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let token = try decoder.decode(OAuthTokenResponseBody.self, from: data).accessToken
-                    oAuth2TokenStorage.token = token
-                    completion(.success(token))
-                } catch {
-                    print("Decoding error: \(error.localizedDescription)")
-                    completion(.failure(error))
-                }
-
+            case .success(let oAuthTokenResponseBody):
+                let token = oAuthTokenResponseBody.accessToken
+                self.oAuth2TokenStorage.token = token
+                
+                completion(.success(token))
             case .failure(let error):
-                print("Network error: \(error.localizedDescription)")
+                print("[fetchOAuthToken] Failed to fetch token: \(error.localizedDescription)")
                 completion(.failure(error))
             }
+            
+            self.task = nil
+            self.lastCode = nil
         }
+        
+        self.task = task
         task.resume()
     }
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: unsplashTokenURLString) else {
-            print("Invalid unsplashTokenURLString: \(unsplashTokenURLString)")
+            print("[makeOAuthTokenRequest] Invalid unsplashTokenURLString: \(unsplashTokenURLString)")
             return nil
         }
         
@@ -61,7 +79,7 @@ final class OAuth2Service {
         ]
         
         guard let url = urlComponents.url else {
-            print("Couldn't create URL")
+            print("[makeOAuthTokenRequest] Couldn't create URL")
             return nil
         }
         

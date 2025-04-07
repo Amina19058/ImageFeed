@@ -6,6 +6,13 @@
 //
 
 import UIKit
+import Kingfisher
+
+private enum ProfileUIConstants {
+    static let profilePhotoImageName = "profile_photo"
+    static let placeholderImageName = "profile_photo_placeholder"
+    static let exitButtonImageName = "exit_button"
+}
 
 final class ProfileViewController: UIViewController {
     private var avatarImageView: UIImageView?
@@ -15,7 +22,37 @@ final class ProfileViewController: UIViewController {
     
     private var logoutButton: UIButton?
     
+    private let profileService = ProfileService.shared
+    private let oAuth2TokenStorage = OAuth2TokenStorage.shared
+    
+    private var profile: Profile?
+    
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     override func viewDidLoad() {
+        setupPrifile()
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        
+        updateAvatar()
+    }
+    
+    private func setupPrifile() {
+        guard let profile = profileService.profile else {
+            print("[setupPrifile] ProfileService profile is nil")
+            return
+        }
+        
+        self.profile = profile
+        
         setupAvatarImageView()
         setupNameLabel()
         setupLoginName()
@@ -24,7 +61,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func setupAvatarImageView() {
-        let profileImage = UIImage(named: "profile_photo")
+        let profileImage = UIImage(named: ProfileUIConstants.profilePhotoImageName)
         let imageView = UIImageView(image: profileImage)
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -38,11 +75,29 @@ final class ProfileViewController: UIViewController {
         imageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
     }
     
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        let processor = RoundCornerImageProcessor(cornerRadius: 20)
+        self.avatarImageView?.kf.setImage(with: url,
+                                          placeholder: UIImage(named: ProfileUIConstants.placeholderImageName),
+                                          options: [.processor(processor)]) { result in
+            switch result {
+            case .success:
+                print("[updateAvatar] Profile image updated successfully")
+            case .failure:
+                print("[updateAvatar] Fail to update profile image")
+            }
+        }
+    }
+    
     private func setupNameLabel() {
         guard let avatarImageView = avatarImageView else { return }
         
         let nameLabel = UILabel()
-        nameLabel.text = "Екатерина Новикова"
+        nameLabel.text = profile?.name
         nameLabel.font = .systemFont(ofSize: 23, weight: .semibold)
         nameLabel.textColor = .ypWhite
         
@@ -60,7 +115,7 @@ final class ProfileViewController: UIViewController {
         guard let nameLabel = nameLabel else { return }
         
         let loginNameLabel = UILabel()
-        loginNameLabel.text = "@ekaterina_nov"
+        loginNameLabel.text = profile?.loginName
         loginNameLabel.font = .systemFont(ofSize: 13, weight: .regular)
         loginNameLabel.textColor = .ypGray
         
@@ -78,7 +133,7 @@ final class ProfileViewController: UIViewController {
         guard let loginNameLabel = loginNameLabel else { return }
         
         let descriptionLabel = UILabel()
-        descriptionLabel.text = "Hello, World!"
+        descriptionLabel.text = profile?.bio
         descriptionLabel.font = .systemFont(ofSize: 13, weight: .regular)
         descriptionLabel.textColor = .ypWhite
         
@@ -94,7 +149,7 @@ final class ProfileViewController: UIViewController {
     
     private func setupLogoutButton() {
         guard let avatarImageView = avatarImageView,
-        let logoutImage = UIImage(named: "exit_button")
+              let logoutImage = UIImage(named: ProfileUIConstants.exitButtonImageName)
         else { return }
 
         let logoutButton = UIButton.systemButton(
@@ -117,6 +172,6 @@ final class ProfileViewController: UIViewController {
     
     @objc
     private func didTapLogoutButton(_ sender: Any) {
-        
+        oAuth2TokenStorage.clearToken()
     }
 }
