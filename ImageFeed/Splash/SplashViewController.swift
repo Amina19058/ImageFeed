@@ -7,12 +7,16 @@
 
 import UIKit
 
+private enum SplashUIConstants {
+    static let splashLogoImageName = "splash_screen_logo"
+}
+
 final class SplashViewController: UIViewController {
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
 
-    private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
+    private let showAuthenticationScreenSegueIdentifier = StoryboardIdentifiers.showAuthenticationScreenSegueIdentifier
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,26 +30,14 @@ final class SplashViewController: UIViewController {
         if let token = oAuth2TokenStorage.token {
             fetchProfile(token)
         } else {
-            let storyboard = UIStoryboard(name: "Main", bundle: .main)
-            
-            guard let viewController = storyboard.instantiateViewController(
-                withIdentifier: "AuthViewController"
-            ) as? AuthViewController else {
-                print("[SplashViewController] Failed to instantiate AuthViewController")
-                return
-            }
-            
-            viewController.delegate = self
-            viewController.modalPresentationStyle = .fullScreen
-            
-            present(viewController, animated: true)
+            showAuthViewController()
         }
     }
     
     private func setupSplash() {
         view.backgroundColor = .ypBlack
         
-        let imageView = UIImageView(image: UIImage(named: "splash_screen_logo"))
+        let imageView = UIImageView(image: UIImage(named: SplashUIConstants.splashLogoImageName))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(imageView)
@@ -60,10 +52,42 @@ final class SplashViewController: UIViewController {
             return
         }
         
-        let tabBarController = UIStoryboard(name: "Main", bundle: .main)
-            .instantiateViewController(withIdentifier: "TabBarViewController")
+        let tabBarController = UIStoryboard(name: StoryboardIdentifiers.main, bundle: .main)
+            .instantiateViewController(withIdentifier: StoryboardIdentifiers.tabBarViewController)
            
         window.rootViewController = tabBarController
+    }
+    
+    private func showAuthViewController() {
+        let storyboard = UIStoryboard(name: StoryboardIdentifiers.main, bundle: .main)
+        
+        guard let viewController = storyboard.instantiateViewController(
+            withIdentifier: StoryboardIdentifiers.authViewController
+        ) as? AuthViewController else {
+            print("[SplashViewController] Failed to instantiate AuthViewController")
+            return
+        }
+        
+        viewController.delegate = self
+        viewController.modalPresentationStyle = .fullScreen
+        
+        present(viewController, animated: true)
+    }
+    
+    private func showAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            alert.dismiss(animated: true)
+            self?.showAuthViewController()
+        }
+        
+        alert.addAction(action)
+        
+        self.present(alert, animated: true)
     }
 }
 
@@ -97,7 +121,7 @@ extension SplashViewController: AuthViewControllerDelegate {
                 
             case .failure(let error):
                 print("Error obtaining profile info: \(error)")
-                break
+                showAlert()
             }
         }
     }

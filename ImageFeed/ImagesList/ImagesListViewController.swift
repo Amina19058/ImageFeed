@@ -7,11 +7,16 @@
 
 import UIKit
 
+private enum ImagesListUIConstants {
+    static let likeButtonOnImageName = "like_button_on"
+    static let likeButtonOffImageName = "like_button_off"
+}
+
 final class ImagesListViewController: UIViewController {
     @IBOutlet private var tableView: UITableView!
     
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
-    private let showSingleImageSegueIdentifier = "ShowSingleImage"
+    private let showSingleImageSegueIdentifier = StoryboardIdentifiers.showSingleImageSegueIdentifier
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,7 +78,7 @@ extension ImagesListViewController {
         cell.dateLabel.text = Date().dateString
         
         let isLiked = indexPath.row % 2 == 0
-        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+        let likeImage = isLiked ? UIImage(named: ImagesListUIConstants.likeButtonOnImageName) : UIImage(named: ImagesListUIConstants.likeButtonOffImageName)
         cell.likeButton.setImage(likeImage, for: .normal)
     }
 }

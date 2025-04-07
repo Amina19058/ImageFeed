@@ -8,7 +8,7 @@
 import UIKit
 
 final class ImagesListCell: UITableViewCell {
-    static let reuseIdentifier = "ImagesListCell"
+    static let reuseIdentifier = StoryboardIdentifiers.reuseCellIdentifier
     
     @IBOutlet var cellImage: UIImageView!
     @IBOutlet var likeButton: UIButton!
