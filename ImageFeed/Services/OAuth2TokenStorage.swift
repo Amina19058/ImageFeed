@@ -32,7 +32,7 @@ final class OAuth2TokenStorage {
         }
     }
     
-    func clearToken() {
+    func cleanToken() {
         storage.removeObject(forKey: Keys.token.rawValue)
     }
 }

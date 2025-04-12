@@ -103,3 +103,12 @@ final class ProfileImageService {
         return request
     }
 }
+
+extension ProfileImageService {
+    func cleanProfileImage() {
+        task?.cancel()
+        task = nil
+        lastToken = nil
+        avatarURL = nil
+    }
+}

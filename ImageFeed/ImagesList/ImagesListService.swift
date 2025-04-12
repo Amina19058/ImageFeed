@@ -178,3 +178,16 @@ final class ImagesListService {
         return request
     }
 }
+
+extension ImagesListService {
+    func cleanImages() {
+        photos = []
+        lastLoadedPage = .zero
+        
+        fetchTask?.cancel()
+        fetchTask = nil
+        
+        likeTask?.cancel()
+        likeTask = nil
+    }
+}

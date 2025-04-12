@@ -94,3 +94,12 @@ final class ProfileService {
         return request
     }
 }
+
+extension ProfileService {
+    func cleanProfile() {
+        task?.cancel()
+        task = nil
+        profile = nil
+        lastToken = nil
+    }
+}
