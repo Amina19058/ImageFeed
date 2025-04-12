@@ -31,7 +31,7 @@ final class ProfileService {
     
     private(set) var profile: Profile?
     
-    private let unsplashProfileURLString = "https://api.unsplash.com/me"
+    private let unsplashProfileURLString = UnsplashUrlStrings.profile
 
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?

@@ -21,9 +21,9 @@ struct UserResult: Decodable {
 
 final class ProfileImageService {
     static let shared = ProfileImageService()
-    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
+    static let didChangeNotification = NotificationNames.profileImageProviderDidChange
     
-    private let unsplashProfileImageURLString = "https://api.unsplash.com/users/"
+    private let unsplashProfileImageURLString = UnsplashUrlStrings.profileImage
     
     private let urlSession = URLSession.shared
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared

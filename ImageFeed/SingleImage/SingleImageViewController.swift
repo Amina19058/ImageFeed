@@ -8,28 +8,24 @@
 import UIKit
 
 final class SingleImageViewController: UIViewController {
-    var image: UIImage? {
+    var imageUrl: URL? {
         didSet {
-            guard isViewLoaded, let image else { return }
-            imageView.image = image
-            rescaleAndCenterImageInScrollView(image: image)
+            guard isViewLoaded, let imageUrl else { return }
+            setupImage()
         }
     }
     
     @IBOutlet private var scrollView: UIScrollView!
-    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet var imageView: UIImageView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let image else { return }
-        imageView.image = image
-        imageView.frame.size = image.size
-        
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
         
-        rescaleAndCenterImageInScrollView(image: image)
+        guard imageUrl != nil else { return }
+        setupImage()
     }
     
     @IBAction private func didTapBackButton(_ sender: Any) {
@@ -37,7 +33,7 @@ final class SingleImageViewController: UIViewController {
     }
     
     @IBAction private func didTapShareButton(_ sender: Any) {
-        guard let image else { return }
+        guard let image = imageView.image else { return }
         let share = UIActivityViewController(
             activityItems: [image],
             applicationActivities: nil
@@ -45,6 +41,45 @@ final class SingleImageViewController: UIViewController {
         present(share, animated: false, completion: nil)
     }
     
+    private func setupImage() {
+        UIBlockingProgressHUD.show()
+        imageView.kf.setImage(with: imageUrl) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self = self else { return }
+            switch result {
+            case .success(let imageResult):
+                self.imageView.frame.size = imageResult.image.size
+                rescaleAndCenterImageInScrollView(image: imageResult.image)
+            case .failure:
+                showAlert()
+            }
+        }
+    }
+    
+    private func showAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Попробовать ещё раз?",
+            preferredStyle: .alert)
+        
+        let cancel = UIAlertAction(title: "Не надо", style: .default) { [weak self] _ in
+            guard let self else { return }
+            
+            alert.dismiss(animated: true)
+            didTapBackButton(self)
+        }
+        
+        let reload = UIAlertAction(title: "Повторить", style: .default) { [weak self] _ in
+            alert.dismiss(animated: true)
+            self?.setupImage()
+        }
+        
+        alert.addAction(cancel)
+        alert.addAction(reload)
+        
+        self.present(alert, animated: true)
+    }
 }
 
 extension SingleImageViewController: UIScrollViewDelegate {

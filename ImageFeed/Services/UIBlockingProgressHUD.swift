@@ -9,6 +9,12 @@ import UIKit
 import ProgressHUD
 
 final class UIBlockingProgressHUD {
+    static func style() {
+        ProgressHUD.animationType = .activityIndicator
+        ProgressHUD.colorHUD = .black
+        ProgressHUD.colorAnimation = .lightGray
+    }
+    
     private static var window: UIWindow? {
         return UIApplication.shared.windows.first
     }

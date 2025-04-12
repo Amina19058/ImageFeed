@@ -14,7 +14,7 @@ enum AuthServiceError: Error {
 final class OAuth2Service {
     static let shared = OAuth2Service()
     
-    private let unsplashTokenURLString = "https://unsplash.com/oauth/token"
+    private let unsplashTokenURLString = UnsplashUrlStrings.token
 
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
 
