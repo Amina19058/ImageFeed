@@ -22,3 +22,7 @@ struct PhotoResult: Decodable {
         let thumb: String
     }
 }
+
+struct PhotoLikeResult: Decodable {
+    let photo: PhotoResult
+}

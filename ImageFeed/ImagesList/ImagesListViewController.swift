@@ -60,14 +60,6 @@ final class ImagesListViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
-    
-    private func getImage(named name: String) -> UIImage {
-        guard let image = UIImage(named: name) else {
-            assertionFailure("Failed to get image named: \(name)")
-            return UIImage()
-        }
-        return image
-    }
 }
 
 extension ImagesListViewController: UITableViewDataSource {
@@ -129,7 +121,7 @@ extension ImagesListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let image = getImage(named: photosName[indexPath.row])
+        let image = photos[indexPath.row]
         
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right

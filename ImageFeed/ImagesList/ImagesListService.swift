@@ -100,12 +100,12 @@ final class ImagesListService {
             return
         }
 
-        let likeTask = urlSession.objectTask(for: request) { [weak self] (result: Result<PhotoResult, Error>) in
+        let likeTask = urlSession.objectTask(for: request) { [weak self] (result: Result<PhotoLikeResult, Error>) in
             guard let self else { return }
             
             switch result {
-            case .success(let photoResult):
-                let changedPhoto = Photo(from: photoResult)
+            case .success(let photoLikeResult):
+                let changedPhoto = Photo(from: photoLikeResult.photo)
                 
                 for (insex, photo) in self.photos.enumerated() {
                     if photo.id == changedPhoto.id {
@@ -113,12 +113,15 @@ final class ImagesListService {
                     }
                 }
                 
+                completion(.success(()))
+                
                 NotificationCenter.default
                     .post(name: ImagesListService.didChangeNotification,
                         object: self)
                             
             case .failure(let error):
                 print("[changeLike] Failed to change like: \(error.localizedDescription)")
+                completion(.failure(error))
             }
             self.likeTask = nil
         }
