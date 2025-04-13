@@ -42,7 +42,7 @@ final class ImagesListService {
     private var fetchTask: URLSessionTask?
     private var likeTask: URLSessionTask?
 
-    static let didChangeNotification = NotificationNames.imagesListServiceDidChange
+    static let didChangeNotification = Notification.Name(rawValue: .Notification.imagesListServiceDidChange)
     
     private init() {
         lastLoadedPage = .zero
@@ -147,7 +147,7 @@ final class ImagesListService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = .HTTPMethod.get
         
         guard let token = OAuth2TokenStorage.shared.token else {
             assertionFailure("No token found")
@@ -169,7 +169,7 @@ final class ImagesListService {
         
         var request = URLRequest(url: url)
         
-        request.httpMethod = isLike ? "POST" : "DELETE"
+        request.httpMethod = isLike ? .HTTPMethod.post : .HTTPMethod.delete
         
         guard let token = OAuth2TokenStorage.shared.token else {
             assertionFailure("No token found")

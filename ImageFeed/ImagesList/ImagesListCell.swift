@@ -7,13 +7,8 @@
 
 import UIKit
 
-private enum ImagesListCellUIConstants {
-    static let likeButtonOnImageName = "like_button_on"
-    static let likeButtonOffImageName = "like_button_off"
-}
-
 final class ImagesListCell: UITableViewCell {
-    static let reuseIdentifier = StoryboardIdentifiers.reuseCellIdentifier
+    static let reuseIdentifier: String = .Storyboard.reuseCellIdentifier
     
     @IBOutlet var cellImage: UIImageView!
     @IBOutlet var likeButton: UIButton!
@@ -26,7 +21,8 @@ final class ImagesListCell: UITableViewCell {
     }
     
     func setIsLiked(_ isLiked: Bool) {
-        let imageName = isLiked ? ImagesListCellUIConstants.likeButtonOnImageName : ImagesListCellUIConstants.likeButtonOffImageName
+        let imageName: String = isLiked ? .Assets.ImagesListCell.likeButtonOnImageName :
+            .Assets.ImagesListCell.likeButtonOffImageName
         
         likeButton.setImage(UIImage(named: imageName), for: .normal)
     }

@@ -8,12 +8,6 @@
 import UIKit
 import Kingfisher
 
-private enum ImagesListUIConstants {
-    static let likeButtonOnImageName = "like_button_on"
-    static let likeButtonOffImageName = "like_button_off"
-    static let photoPlaceholderImageName = "photo_placeholder"
-}
-
 final class ImagesListViewController: UIViewController {
     @IBOutlet private var tableView: UITableView!
     
@@ -21,7 +15,7 @@ final class ImagesListViewController: UIViewController {
     
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     private var photos: [Photo] = []
-    private let showSingleImageSegueIdentifier = StoryboardIdentifiers.showSingleImageSegueIdentifier
+    private let showSingleImageSegueIdentifier: String = .Storyboard.showSingleImageSegueIdentifier
     
     private var imagesListServiceObserver: NSObjectProtocol?
     
@@ -97,7 +91,7 @@ extension ImagesListViewController {
         
         cell.cellImage.kf.indicatorType = .activity
         cell.cellImage.kf.setImage(with: url,
-                                   placeholder: UIImage(named: ImagesListUIConstants.photoPlaceholderImageName)) { [weak self] result in
+                                   placeholder: UIImage(named: .Assets.ImagesListCell.placeholderImageName)) { [weak self] result in
             switch result {
             case .success:
                 print("[updateAvatar] Profile image updated successfully")
@@ -114,7 +108,8 @@ extension ImagesListViewController {
         }
         
         let isLiked = photo.isLiked
-        let likeImage = isLiked ? UIImage(named: ImagesListUIConstants.likeButtonOnImageName) : UIImage(named: ImagesListUIConstants.likeButtonOffImageName)
+        let likeImage = isLiked ? UIImage(named: .Assets.ImagesListCell.likeButtonOnImageName) : UIImage(named: .Assets.ImagesListCell.likeButtonOffImageName)
+        
         cell.likeButton.setImage(likeImage, for: .normal)
     }
 }

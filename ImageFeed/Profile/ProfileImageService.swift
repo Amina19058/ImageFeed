@@ -21,7 +21,7 @@ struct UserResult: Decodable {
 
 final class ProfileImageService {
     static let shared = ProfileImageService()
-    static let didChangeNotification = NotificationNames.profileImageProviderDidChange
+    static let didChangeNotification = Notification.Name(rawValue: .Notification.profileImageProviderDidChange)
     
     private let unsplashProfileImageURLString = UnsplashUrlStrings.profileImage
     
@@ -96,7 +96,7 @@ final class ProfileImageService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = .HTTPMethod.get
         
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         

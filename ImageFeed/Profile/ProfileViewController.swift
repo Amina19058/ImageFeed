@@ -8,12 +8,6 @@
 import UIKit
 import Kingfisher
 
-private enum ProfileUIConstants {
-    static let profilePhotoImageName = "profile_photo"
-    static let placeholderImageName = "profile_photo_placeholder"
-    static let exitButtonImageName = "exit_button"
-}
-
 final class ProfileViewController: UIViewController {
     private var avatarImageView: UIImageView?
     private var nameLabel: UILabel?
@@ -62,7 +56,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func setupAvatarImageView() {
-        let profileImage = UIImage(named: ProfileUIConstants.profilePhotoImageName)
+        let profileImage = UIImage(named: .Assets.Profile.photoImageName)
         let imageView = UIImageView(image: profileImage)
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -86,7 +80,7 @@ final class ProfileViewController: UIViewController {
         else { return }
         let processor = RoundCornerImageProcessor(cornerRadius: 20)
         self.avatarImageView?.kf.setImage(with: url,
-                                          placeholder: UIImage(named: ProfileUIConstants.placeholderImageName),
+                                          placeholder: UIImage(named: .Assets.Profile.placeholderImageName),
                                           options: [.processor(processor)]) { result in
             switch result {
             case .success:
@@ -153,7 +147,7 @@ final class ProfileViewController: UIViewController {
     
     private func setupLogoutButton() {
         guard let avatarImageView = avatarImageView,
-              let logoutImage = UIImage(named: ProfileUIConstants.exitButtonImageName)
+              let logoutImage = UIImage(named: .Assets.Profile.exitButtonImageName)
         else { return }
 
         let logoutButton = UIButton.systemButton(

@@ -7,10 +7,6 @@
 
 import UIKit
 
-private enum SingleImageUIConstants {
-    static let photoPlaceholderImageName = "photo_placeholder"
-}
-
 final class SingleImageViewController: UIViewController {
     var imageUrl: URL? {
         didSet {
@@ -48,7 +44,7 @@ final class SingleImageViewController: UIViewController {
     private func setupImage() {
         UIBlockingProgressHUD.show()
         imageView.kf.setImage(with: imageUrl,
-                              placeholder: UIImage(named: SingleImageUIConstants.photoPlaceholderImageName)) { [weak self] result in
+                              placeholder: UIImage(named: .Assets.SingleImage.placeholderImageName)) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             
             guard let self = self else { return }
