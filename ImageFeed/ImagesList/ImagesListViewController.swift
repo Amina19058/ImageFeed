@@ -107,9 +107,13 @@ extension ImagesListViewController {
             }
         }
         
-        cell.dateLabel.text = Date().dateString
+        if let photoDate = photo.createdAt {
+            cell.dateLabel.text = photoDate.dateString
+        } else {
+            cell.dateLabel.text = ""
+        }
         
-        let isLiked = indexPath.row % 2 == 0
+        let isLiked = photo.isLiked
         let likeImage = isLiked ? UIImage(named: ImagesListUIConstants.likeButtonOnImageName) : UIImage(named: ImagesListUIConstants.likeButtonOffImageName)
         cell.likeButton.setImage(likeImage, for: .normal)
     }
