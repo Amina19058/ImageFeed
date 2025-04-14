@@ -8,12 +8,6 @@
 import UIKit
 import Kingfisher
 
-private enum ProfileUIConstants {
-    static let profilePhotoImageName = "profile_photo"
-    static let placeholderImageName = "profile_photo_placeholder"
-    static let exitButtonImageName = "exit_button"
-}
-
 final class ProfileViewController: UIViewController {
     private var avatarImageView: UIImageView?
     private var nameLabel: UILabel?
@@ -24,6 +18,7 @@ final class ProfileViewController: UIViewController {
     
     private let profileService = ProfileService.shared
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
+    private let profileLogoutService = ProfileLogoutService.shared
     
     private var profile: Profile?
     
@@ -61,11 +56,14 @@ final class ProfileViewController: UIViewController {
     }
     
     private func setupAvatarImageView() {
-        let profileImage = UIImage(named: ProfileUIConstants.profilePhotoImageName)
+        let profileImage = UIImage(named: .Assets.Profile.photoImageName)
         let imageView = UIImageView(image: profileImage)
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
-
+        
+        imageView.layer.cornerRadius = imageView.frame.width / 2
+        imageView.clipsToBounds = true
+        
         self.avatarImageView = imageView
         view.addSubview(imageView)
         
@@ -82,7 +80,7 @@ final class ProfileViewController: UIViewController {
         else { return }
         let processor = RoundCornerImageProcessor(cornerRadius: 20)
         self.avatarImageView?.kf.setImage(with: url,
-                                          placeholder: UIImage(named: ProfileUIConstants.placeholderImageName),
+                                          placeholder: UIImage(named: .Assets.Profile.placeholderImageName),
                                           options: [.processor(processor)]) { result in
             switch result {
             case .success:
@@ -149,7 +147,7 @@ final class ProfileViewController: UIViewController {
     
     private func setupLogoutButton() {
         guard let avatarImageView = avatarImageView,
-              let logoutImage = UIImage(named: ProfileUIConstants.exitButtonImageName)
+              let logoutImage = UIImage(named: .Assets.Profile.exitButtonImageName)
         else { return }
 
         let logoutButton = UIButton.systemButton(
@@ -172,6 +170,35 @@ final class ProfileViewController: UIViewController {
     
     @objc
     private func didTapLogoutButton(_ sender: Any) {
-        oAuth2TokenStorage.clearToken()
+        showLogoutAlert()
+    }
+    
+    private func showLogoutAlert() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            preferredStyle: .alert)
+        
+        let yesAction = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            alert.dismiss(animated: true)
+            
+            self?.profileLogoutService.logout()
+            
+            guard let window = UIApplication.shared.windows.first else {
+                assertionFailure("Invalid window configuration")
+                return
+            }
+            
+            window.rootViewController = SplashViewController()
+        }
+        
+        let noAction = UIAlertAction(title: "Нет", style: .default) { _ in
+            alert.dismiss(animated: true)
+        }
+        
+        alert.addAction(yesAction)
+        alert.addAction(noAction)
+
+        self.present(alert, animated: true)
     }
 }

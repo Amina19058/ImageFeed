@@ -31,7 +31,7 @@ final class ProfileService {
     
     private(set) var profile: Profile?
     
-    private let unsplashProfileURLString = "https://api.unsplash.com/me"
+    private let unsplashProfileURLString = UnsplashUrlStrings.profile
 
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
@@ -87,10 +87,19 @@ final class ProfileService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = .HTTPMethod.get
         
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         return request
+    }
+}
+
+extension ProfileService {
+    func cleanProfile() {
+        task?.cancel()
+        task = nil
+        profile = nil
+        lastToken = nil
     }
 }

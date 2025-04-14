@@ -21,9 +21,9 @@ struct UserResult: Decodable {
 
 final class ProfileImageService {
     static let shared = ProfileImageService()
-    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
+    static let didChangeNotification = Notification.Name(rawValue: .Notification.profileImageProviderDidChange)
     
-    private let unsplashProfileImageURLString = "https://api.unsplash.com/users/"
+    private let unsplashProfileImageURLString = UnsplashUrlStrings.profileImage
     
     private let urlSession = URLSession.shared
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
@@ -96,10 +96,19 @@ final class ProfileImageService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = .HTTPMethod.get
         
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         return request
+    }
+}
+
+extension ProfileImageService {
+    func cleanProfileImage() {
+        task?.cancel()
+        task = nil
+        lastToken = nil
+        avatarURL = nil
     }
 }

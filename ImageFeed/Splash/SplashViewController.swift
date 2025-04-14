@@ -7,16 +7,12 @@
 
 import UIKit
 
-private enum SplashUIConstants {
-    static let splashLogoImageName = "splash_screen_logo"
-}
-
 final class SplashViewController: UIViewController {
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
 
-    private let showAuthenticationScreenSegueIdentifier = StoryboardIdentifiers.showAuthenticationScreenSegueIdentifier
+    private let showAuthenticationScreenSegueIdentifier: String = .Storyboard.showAuthenticationScreenSegueIdentifier
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +33,7 @@ final class SplashViewController: UIViewController {
     private func setupSplash() {
         view.backgroundColor = .ypBlack
         
-        let imageView = UIImageView(image: UIImage(named: SplashUIConstants.splashLogoImageName))
+        let imageView = UIImageView(image: UIImage(named: .Assets.Splash.logoImageName))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(imageView)
@@ -52,17 +48,17 @@ final class SplashViewController: UIViewController {
             return
         }
         
-        let tabBarController = UIStoryboard(name: StoryboardIdentifiers.main, bundle: .main)
-            .instantiateViewController(withIdentifier: StoryboardIdentifiers.tabBarViewController)
+        let tabBarController = UIStoryboard(name: .Storyboard.main, bundle: .main)
+            .instantiateViewController(withIdentifier: .Storyboard.tabBarViewController)
            
         window.rootViewController = tabBarController
     }
     
     private func showAuthViewController() {
-        let storyboard = UIStoryboard(name: StoryboardIdentifiers.main, bundle: .main)
+        let storyboard = UIStoryboard(name: .Storyboard.main, bundle: .main)
         
         guard let viewController = storyboard.instantiateViewController(
-            withIdentifier: StoryboardIdentifiers.authViewController
+            withIdentifier: .Storyboard.authViewController
         ) as? AuthViewController else {
             print("[SplashViewController] Failed to instantiate AuthViewController")
             return

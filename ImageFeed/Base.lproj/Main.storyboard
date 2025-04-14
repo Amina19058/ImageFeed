@@ -54,6 +54,9 @@
                                                     <state key="normal" title="Button" image="like_button_on">
                                                         <color key="titleColor" name="YP White"/>
                                                     </state>
+                                                    <connections>
+                                                        <action selector="likeButtonClicked:" destination="tfx-Ev-KhG" eventType="touchUpInside" id="qLe-ul-gUf"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>

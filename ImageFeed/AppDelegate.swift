@@ -11,9 +11,11 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        UIBlockingProgressHUD.style()
         return true
     }
 
@@ -21,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         
-        let sceneConfiguration = UISceneConfiguration(name: StoryboardIdentifiers.main,
+        let sceneConfiguration = UISceneConfiguration(name: .Storyboard.main,
                                                       sessionRole: connectingSceneSession.role)
             sceneConfiguration.delegateClass = SceneDelegate.self
         
