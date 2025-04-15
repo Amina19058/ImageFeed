@@ -8,31 +8,25 @@
 import UIKit
 import Kingfisher
 
-final class ImagesListViewController: UIViewController {
+protocol ImagesListViewControllerProtocol: AnyObject {
+    var presenter: ImagesListPresenterProtocol? { get set }
+
+    func updateTableViewAnimated()
+    func showAlert()
+    func updateTable(at indexPath: IndexPath)
+}
+
+final class ImagesListViewController: UIViewController & ImagesListViewControllerProtocol {
+    
+    var presenter: ImagesListPresenterProtocol?
+    
     @IBOutlet private var tableView: UITableView!
-    
-    private let imagesListService = ImagesListService.shared
-    
-    private let photosName: [String] = Array(0..<20).map{ "\($0)" }
-    private var photos: [Photo] = []
     private let showSingleImageSegueIdentifier: String = .Storyboard.showSingleImageSegueIdentifier
-    
-    private var imagesListServiceObserver: NSObjectProtocol?
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        imagesListServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ImagesListService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                updateTableViewAnimated()
-            }
-        
-        imagesListService.fetchPhotosNextPage()
+        presenter?.viewDidLoad()
         
         tableView.rowHeight = 200
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
@@ -42,13 +36,16 @@ final class ImagesListViewController: UIViewController {
         if segue.identifier == showSingleImageSegueIdentifier {
             guard
                 let viewController = segue.destination as? SingleImageViewController,
-                let indexPath = sender as? IndexPath
+                let indexPath = sender as? IndexPath,
+                let presenter
             else {
                 assertionFailure("Invalid segue destination")
                 return
             }
             
-            viewController.imageUrl = URL(string: photos[indexPath.row].largeImageURL)
+            let photo = presenter.photo(at: indexPath)
+            
+            viewController.imageUrl = URL(string: photo.largeImageURL)
             
         } else {
             super.prepare(for: segue, sender: sender)
@@ -58,7 +55,7 @@ final class ImagesListViewController: UIViewController {
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photos.count
+        return presenter?.photosCount() ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -77,15 +74,18 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay: UITableViewCell , forRowAt indexPath: IndexPath) {
-        if indexPath.row + 1 == imagesListService.photos.count {
-            imagesListService.fetchPhotosNextPage()
+        guard let presenter else { return }
+        if indexPath.row + 1 == presenter.photosCount() {
+            presenter.fetchPhotosNextPage()
         }
     }
 }
 
 extension ImagesListViewController {
     private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        let photo = imagesListService.photos[indexPath.row]
+        guard let presenter else { return }
+        
+        let photo = presenter.photo(at: indexPath)
         
         guard let url = URL(string: photo.thumbImageURL) else { return }
         
@@ -120,7 +120,9 @@ extension ImagesListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let image = photos[indexPath.row]
+        guard let presenter else { return 0 }
+        
+        let image = presenter.photo(at: indexPath)
         
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
@@ -132,11 +134,11 @@ extension ImagesListViewController: UITableViewDelegate {
 
 extension ImagesListViewController {
     func updateTableViewAnimated() {
-        let oldCount = photos.count
-        let newCount = imagesListService.photos.count
+        guard let presenter else { return }
         
-        photos = imagesListService.photos
-        
+        let oldCount = tableView.numberOfRows(inSection: 0)
+        let newCount = presenter.photosCount()
+                
         guard newCount - oldCount > 0 else { return }
         
         tableView.performBatchUpdates {
@@ -150,29 +152,20 @@ extension ImagesListViewController {
 
 extension ImagesListViewController: ImagesListCellDelegate {
     func imageListCellDidTapLike(_ cell: ImagesListCell) {
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard
+            let indexPath = tableView.indexPath(for: cell),
+            let presenter
+        else { return }
         
-        let photo = photos[indexPath.row]
-        
-        UIBlockingProgressHUD.show()
-        
-        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
-            guard let self else { return }
-            
-            switch result {
-            case .success:
-                photos = imagesListService.photos
-                cell.setIsLiked(photos[indexPath.row].isLiked)
-                
-            case .failure:
-                print("[imageListCellDidTapLike] Failed to change like")
-                showAlert()
-            }
-            UIBlockingProgressHUD.dismiss()
-        }
+        presenter.changeLike(indexPath: indexPath, cell: cell)
+
     }
     
-    private func showAlert() {
+    func updateTable(at indexPath: IndexPath) {
+        self.tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+    
+    func showAlert() {
         let alert = UIAlertController(
             title: "Что-то пошло не так",
             message: "Не удалось поменять лайк",

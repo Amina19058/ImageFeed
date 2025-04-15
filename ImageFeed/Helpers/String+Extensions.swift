@@ -18,6 +18,7 @@ extension String {
         static let authViewController = "AuthViewController"
         static let tabBarViewController = "TabBarViewController"
         static let imagesListViewController = "ImagesListViewController"
+        static let webViewViewController = "WebViewViewController"
     }
     
     enum Assets {
@@ -57,5 +58,11 @@ extension String {
         static let get = "GET"
         static let post = "POST"
         static let delete = "DELETE"
+    }
+}
+
+extension String {
+    enum UnsplashUrl {
+        static let authorize = "https://unsplash.com/oauth/authorize"
     }
 }

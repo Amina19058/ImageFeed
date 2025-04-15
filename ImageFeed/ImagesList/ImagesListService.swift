@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum ImagesListServiceError: Error {
+    case invalidRequest
+    case alreadyFetching
+}
+
 struct Photo {
     private let dateFormatter = ISO8601DateFormatter()
     
@@ -48,9 +53,10 @@ final class ImagesListService {
         lastLoadedPage = .zero
     }
     
-    func fetchPhotosNextPage() {
+    func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void) {
         if fetchTask != nil {
             print("[fetchPhotosNextPage] Previous fetch is still in progress")
+            completion(.failure(ImagesListServiceError.alreadyFetching))
             return
         }
         
@@ -58,6 +64,7 @@ final class ImagesListService {
         
         guard let request = makePhotosRequest(page: nextPage) else {
             print("[fetchPhotosNextPage] Failed to create photos request")
+            completion(.failure(ImagesListServiceError.invalidRequest))
             return
         }
 
@@ -77,8 +84,11 @@ final class ImagesListService {
                 
                 lastLoadedPage = nextPage
                 
+                completion(.success(photos))
+                
             case .failure(let error):
                 print("[fetchPhotosNextPage] Failed to fetch photos: \(error.localizedDescription)")
+                completion(.failure(error))
             }
             self.fetchTask = nil
         }
