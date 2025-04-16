@@ -11,4 +11,12 @@ final class AuthPage: BasePage {
     var authenticateButton: XCUIElement {
         app.buttons["Authenticate"]
     }
+    
+    var alert: XCUIElement {
+        app.alerts["profileErrorAlert"]
+    }
+    
+    var alertOKButton: XCUIElement {
+        alert.buttons["OK"].firstMatch
+    }
 }

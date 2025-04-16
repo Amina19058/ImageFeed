@@ -11,6 +11,10 @@ final class AuthSteps: BaseSteps {
     private var page: AuthPage = AuthPage()
     
     func tapAuthButton() {
+        if page.alert.waitForExistence(timeout: 1) {
+            page.alertOKButton.tap()
+        }
+        page.authenticateButton.waitForExistence(timeout: 5)
         page.authenticateButton.tap()
     }
 }
