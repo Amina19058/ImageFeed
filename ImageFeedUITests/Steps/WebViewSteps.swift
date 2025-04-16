@@ -21,12 +21,24 @@ final class WebViewSteps: BaseSteps {
         
         page.loginTextField.tap()
         page.loginTextField.typeText(email)
+        
+        page.webView.tap()
         page.webView.swipeUp()
+        
+        if page.app.keyboards.element.exists {
+            page.app.toolbars.buttons["Done"].tap()
+        }
         
         XCTAssertTrue(page.passwordTextField.waitForExistence(timeout: 5))
         
         page.passwordTextField.tap()
+        
+        if !page.app.keyboards.element.exists {
+            page.passwordTextField.tap()
+        }
+        
         page.passwordTextField.typeText(password)
+        page.webView.tap()
         page.webView.swipeUp()
         
         page.loginButton.tap()

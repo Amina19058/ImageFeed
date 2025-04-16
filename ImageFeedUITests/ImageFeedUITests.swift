@@ -14,7 +14,7 @@ final class ImageFeedUITests: BaseTestCase {
     
     override func setUpWithError() throws {
         continueAfterFailure = false
-        
+        app.launchArguments = ["UITests"]
         app.launch()
     }
     

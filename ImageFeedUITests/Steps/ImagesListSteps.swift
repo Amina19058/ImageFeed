@@ -54,7 +54,10 @@ final class ImagesListSteps: BaseSteps {
     }
     
     private func getCell(at index: Int) -> ImageCellElement? {
-        guard index < page.cells.count else {
+        guard
+            page.cellFirstMatch.waitForExistence(timeout: 5),
+            index < page.cells.count
+        else {
             XCTFail("Could not find cell at index \(index)")
             return nil
         }

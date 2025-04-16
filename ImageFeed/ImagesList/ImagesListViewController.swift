@@ -74,6 +74,11 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay: UITableViewCell , forRowAt indexPath: IndexPath) {
+        
+        if ProcessInfo.processInfo.arguments.contains("UITests") {
+            return
+        }
+        
         guard let presenter else { return }
         if indexPath.row + 1 == presenter.photosCount() {
             presenter.fetchPhotosNextPage()
