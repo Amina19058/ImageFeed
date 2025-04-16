@@ -12,9 +12,16 @@ final class TabBarController: UITabBarController {
         
         let storyboard = UIStoryboard(name: .Storyboard.main, bundle: .main)
         
-        let imagesListViewController = storyboard.instantiateViewController(
+        guard let imagesListViewController = storyboard.instantiateViewController(
             withIdentifier: .Storyboard.imagesListViewController
-        )
+        ) as? ImagesListViewController else {
+            print("Failed to instantiate ImagesListViewController")
+            return
+        }
+        
+        let imagesListPresenter = ImagesListPresenter()
+        imagesListViewController.presenter = imagesListPresenter
+        imagesListPresenter.view = imagesListViewController
         
         let profileViewController = ProfileViewController()
         profileViewController.tabBarItem = UITabBarItem(
@@ -22,6 +29,10 @@ final class TabBarController: UITabBarController {
             image: UIImage(named: .Assets.TabBar.profileItemImageName),
             selectedImage: nil
         )
+        
+        let profilePresenter = ProfilePresenter()
+        profileViewController.presenter = profilePresenter
+        profilePresenter.view = profileViewController
         
         self.viewControllers = [imagesListViewController, profileViewController]
     }

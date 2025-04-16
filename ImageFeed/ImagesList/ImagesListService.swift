@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum ImagesListServiceError: Error {
+    case invalidRequest
+    case alreadyFetching
+}
+
 struct Photo {
     private let dateFormatter = ISO8601DateFormatter()
     
@@ -17,6 +22,16 @@ struct Photo {
     let thumbImageURL: String
     let largeImageURL: String
     let isLiked: Bool
+    
+    init(id: String, size: CGSize, createdAt: Date? = nil, welcomeDescription: String? = nil, thumbImageURL: String, largeImageURL: String, isLiked: Bool = false) {
+        self.id = id
+        self.size = size
+        self.createdAt = createdAt
+        self.welcomeDescription = welcomeDescription
+        self.thumbImageURL = thumbImageURL
+        self.largeImageURL = largeImageURL
+        self.isLiked = isLiked
+    }
     
     init(from photoResult: PhotoResult) {
         self.id = photoResult.id
@@ -29,7 +44,14 @@ struct Photo {
     }
 }
 
-final class ImagesListService {
+protocol ImagesListServiceProtocol {
+    var photos: [Photo] { get }
+    
+    func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void)
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void)
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
     static let shared = ImagesListService()
     
     private let unsplashPhotosURLString = UnsplashUrlStrings.photos
@@ -48,9 +70,10 @@ final class ImagesListService {
         lastLoadedPage = .zero
     }
     
-    func fetchPhotosNextPage() {
+    func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void) {
         if fetchTask != nil {
             print("[fetchPhotosNextPage] Previous fetch is still in progress")
+            completion(.failure(ImagesListServiceError.alreadyFetching))
             return
         }
         
@@ -58,6 +81,7 @@ final class ImagesListService {
         
         guard let request = makePhotosRequest(page: nextPage) else {
             print("[fetchPhotosNextPage] Failed to create photos request")
+            completion(.failure(ImagesListServiceError.invalidRequest))
             return
         }
 
@@ -77,8 +101,11 @@ final class ImagesListService {
                 
                 lastLoadedPage = nextPage
                 
+                completion(.success(photos))
+                
             case .failure(let error):
                 print("[fetchPhotosNextPage] Failed to fetch photos: \(error.localizedDescription)")
+                completion(.failure(error))
             }
             self.fetchTask = nil
         }

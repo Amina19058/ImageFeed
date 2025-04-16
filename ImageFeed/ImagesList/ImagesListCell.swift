@@ -7,7 +7,11 @@
 
 import UIKit
 
-final class ImagesListCell: UITableViewCell {
+protocol ImagesListCellProtocol {
+    func setIsLiked(_ isLiked: Bool)
+}
+
+final class ImagesListCell: UITableViewCell & ImagesListCellProtocol {
     static let reuseIdentifier: String = .Storyboard.reuseCellIdentifier
     
     @IBOutlet var cellImage: UIImageView!

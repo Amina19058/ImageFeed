@@ -82,6 +82,7 @@ final class SplashViewController: UIViewController {
         }
         
         alert.addAction(action)
+        alert.view.accessibilityIdentifier = "profileErrorAlert"
         
         self.present(alert, animated: true)
     }
