@@ -107,6 +107,7 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         nameLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
         nameLabel.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor).isActive = true
         nameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 8).isActive = true
+        nameLabel.accessibilityIdentifier = "Name Lastname"
     }
     
     private func setupLoginName() {
@@ -125,6 +126,7 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         loginNameLabel.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor).isActive = true
         loginNameLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor).isActive = true
         loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8).isActive = true
+        loginNameLabel.accessibilityIdentifier = "@username"
     }
     
     private func setupDescriptionLabel() {

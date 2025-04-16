@@ -271,6 +271,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="utP-3V-cVv">
                                 <rect key="frame" x="8" y="8" width="48" height="48"/>
+                                <accessibility key="accessibilityConfiguration" identifier="nav back button"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="48" id="922-ZL-4TG"/>
                                     <constraint firstAttribute="height" constant="48" id="Wlx-lG-H6w"/>
