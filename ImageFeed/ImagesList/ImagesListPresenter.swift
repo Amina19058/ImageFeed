@@ -11,7 +11,7 @@ protocol ImagesListPresenterProtocol {
     var view: ImagesListViewControllerProtocol? { get set }
     
     func viewDidLoad()
-    func changeLike(indexPath: IndexPath, cell: ImagesListCell)
+    func changeLike(indexPath: IndexPath, cell: ImagesListCellProtocol)
     func fetchPhotosNextPage()
     func photosCount() -> Int
     func photo(at indexPath: IndexPath) -> Photo
@@ -20,9 +20,14 @@ protocol ImagesListPresenterProtocol {
 final class ImagesListPresenter: ImagesListPresenterProtocol {
     weak var view: ImagesListViewControllerProtocol?
     
-    private let imagesListService = ImagesListService.shared
+    private var imagesListService: ImagesListServiceProtocol
     private var imagesListServiceObserver: NSObjectProtocol?
-    private var photos: [Photo] = []
+    private var photos: [Photo]
+    
+    init(imagesListService: ImagesListServiceProtocol = ImagesListService.shared, photos: [Photo] = []) {
+        self.imagesListService = imagesListService
+        self.photos = photos
+    }
     
     func viewDidLoad() {
         imagesListServiceObserver = NotificationCenter.default
@@ -55,7 +60,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
     
     
-    func changeLike(indexPath: IndexPath, cell: ImagesListCell) {
+    func changeLike(indexPath: IndexPath, cell: ImagesListCellProtocol) {
         let photo = photos[indexPath.row]
         
         UIBlockingProgressHUD.show()

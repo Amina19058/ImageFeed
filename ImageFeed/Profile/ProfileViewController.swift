@@ -8,7 +8,15 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfilePresenterProtocol? { get set }
+    func updateProfileDetails(profile: Profile)
+    func updateAvatar()
+}
+
+final class ProfileViewController: UIViewController & ProfileViewControllerProtocol {
+    var presenter: ProfilePresenterProtocol?
+    
     private var avatarImageView: UIImageView?
     private var nameLabel: UILabel?
     private var loginNameLabel: UILabel?
@@ -16,43 +24,35 @@ final class ProfileViewController: UIViewController {
     
     private var logoutButton: UIButton?
     
-    private let profileService = ProfileService.shared
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
     private let profileLogoutService = ProfileLogoutService.shared
     
-    private var profile: Profile?
-    
-    private var profileImageServiceObserver: NSObjectProtocol?
-    
+    private enum DummyProfile {
+        static let nameLabel = "Екатерина Новикова"
+        static let loginNameLabel = "@ekaterina_nov"
+        static let descriptionLabel = "Hello, world!"
+
+    }
+        
     override func viewDidLoad() {
-        setupPrifile()
+        guard let presenter else { return }
         
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        
-        updateAvatar()
+        setupProfile()
+        presenter.viewDidLoad()
     }
     
-    private func setupPrifile() {
-        guard let profile = profileService.profile else {
-            print("[setupPrifile] ProfileService profile is nil")
-            return
-        }
-        
-        self.profile = profile
-        
+    private func setupProfile() {
         setupAvatarImageView()
         setupNameLabel()
         setupLoginName()
         setupDescriptionLabel()
         setupLogoutButton()
+    }
+    
+    func updateProfileDetails(profile: Profile) {
+        nameLabel?.text = profile.name
+        loginNameLabel?.text = profile.loginName
+        descriptionLabel?.text = profile.bio
     }
     
     private func setupAvatarImageView() {
@@ -73,7 +73,7 @@ final class ProfileViewController: UIViewController {
         imageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
     }
     
-    private func updateAvatar() {
+    func updateAvatar() {
         guard
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let url = URL(string: profileImageURL)
@@ -95,7 +95,7 @@ final class ProfileViewController: UIViewController {
         guard let avatarImageView = avatarImageView else { return }
         
         let nameLabel = UILabel()
-        nameLabel.text = profile?.name
+        nameLabel.text = DummyProfile.nameLabel
         nameLabel.font = .systemFont(ofSize: 23, weight: .semibold)
         nameLabel.textColor = .ypWhite
         
@@ -113,7 +113,7 @@ final class ProfileViewController: UIViewController {
         guard let nameLabel = nameLabel else { return }
         
         let loginNameLabel = UILabel()
-        loginNameLabel.text = profile?.loginName
+        loginNameLabel.text = DummyProfile.loginNameLabel
         loginNameLabel.font = .systemFont(ofSize: 13, weight: .regular)
         loginNameLabel.textColor = .ypGray
         
@@ -131,7 +131,7 @@ final class ProfileViewController: UIViewController {
         guard let loginNameLabel = loginNameLabel else { return }
         
         let descriptionLabel = UILabel()
-        descriptionLabel.text = profile?.bio
+        descriptionLabel.text = DummyProfile.descriptionLabel
         descriptionLabel.font = .systemFont(ofSize: 13, weight: .regular)
         descriptionLabel.textColor = .ypWhite
         

@@ -23,6 +23,16 @@ struct Photo {
     let largeImageURL: String
     let isLiked: Bool
     
+    init(id: String, size: CGSize, createdAt: Date? = nil, welcomeDescription: String? = nil, thumbImageURL: String, largeImageURL: String, isLiked: Bool = false) {
+        self.id = id
+        self.size = size
+        self.createdAt = createdAt
+        self.welcomeDescription = welcomeDescription
+        self.thumbImageURL = thumbImageURL
+        self.largeImageURL = largeImageURL
+        self.isLiked = isLiked
+    }
+    
     init(from photoResult: PhotoResult) {
         self.id = photoResult.id
         self.size = CGSize(width: photoResult.width, height: photoResult.height)
@@ -34,7 +44,14 @@ struct Photo {
     }
 }
 
-final class ImagesListService {
+protocol ImagesListServiceProtocol {
+    var photos: [Photo] { get }
+    
+    func fetchPhotosNextPage(completion: @escaping (Result<[Photo], Error>) -> Void)
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void)
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
     static let shared = ImagesListService()
     
     private let unsplashPhotosURLString = UnsplashUrlStrings.photos

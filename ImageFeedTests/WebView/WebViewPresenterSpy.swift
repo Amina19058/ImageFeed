@@ -5,8 +5,8 @@
 //  Created by Amina Khusnutdinova on 15.04.2025.
 //
 
-import ImageFeed
 import Foundation
+@testable import ImageFeed
 
 final class WebViewPresenterSpy: WebViewPresenterProtocol {
     var viewDidLoadCalled: Bool = false
