@@ -166,6 +166,7 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         logoutButton.centerYAnchor.constraint(equalTo: avatarImageView.centerYAnchor).isActive = true
         logoutButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
         logoutButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        logoutButton.accessibilityIdentifier = "logout button"
     }
     
     @objc
@@ -198,6 +199,8 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         
         alert.addAction(yesAction)
         alert.addAction(noAction)
+        
+        alert.view.accessibilityIdentifier = "Bye bye!"
 
         self.present(alert, animated: true)
     }

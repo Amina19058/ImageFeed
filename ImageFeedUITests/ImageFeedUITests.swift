@@ -24,7 +24,7 @@ final class ImageFeedUITests: BaseTestCase {
         
         webViewSteps
             .checkWebViewExists()
-            .login(email: "", password: "")
+            .login(email: "ami.renatovna@gmail.com", password: "KrasivoProstoGenialno")
         
         imagesListSteps
             .checkCell(at: 0)
